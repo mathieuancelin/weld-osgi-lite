@@ -1,0 +1,14 @@
+h1. How to build it
+
+You'll need to build the OSGi Lite project to build this project.
+It's available at :
+
+http://pojosr.googlecode.com/svn/trunk/
+
+h2. Run it
+
+Just do 
+
+<pre><code>
+mvn clean install 
+</code></pre>
