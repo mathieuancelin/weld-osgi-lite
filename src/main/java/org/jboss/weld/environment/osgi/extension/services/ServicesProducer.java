@@ -4,7 +4,7 @@ import de.kalpatec.pojosr.framework.launch.PojoServiceRegistry;
 import java.lang.reflect.ParameterizedType;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
-import org.jboss.weld.environment.osgi.OSGiLite;
+import org.jboss.weld.environment.osgi.WeldOSGiLite;
 
 /**
  * Producers for Specific injected types;
@@ -13,38 +13,29 @@ import org.jboss.weld.environment.osgi.OSGiLite;
  */
 public class ServicesProducer {
 
-//    @Produces
-//    public Bundle getBundle(InjectionPoint p) {
-//        Bundle bundle = FrameworkUtil.getBundle(p.getMember().getDeclaringClass());
-//        if (bundle != null)
-//            return bundle;
-//        else
-//            throw new IllegalStateException("Can't find bundle.");
-//    }
-//
-//    @Produces
-//    public BundleContext getBundleContext(InjectionPoint p) {
-//        Bundle bundle = FrameworkUtil.getBundle(p.getMember().getDeclaringClass());
-//        if (bundle != null)
-//            return bundle.getBundleContext();
-//        else
-//            throw new IllegalStateException("Can't find bundle.");
-//    }
-
     @Produces
-    public <T> ServicesImpl<T> getOSGiServices(InjectionPoint p) {
+    public <T> ServicesImpl<T> getOSGiServices(RegistryHolder holder, InjectionPoint p) {
+        if (holder.getRegistry() == null) {
+            holder.setRegistry(WeldOSGiLite.current.get());
+        }
         return new ServicesImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
-                p.getMember().getDeclaringClass());
+                p.getMember().getDeclaringClass(), holder.getRegistry());
     }
 
     @Produces
-    public <T> ServiceImpl<T> getOSGiService(InjectionPoint p) {
+    public <T> ServiceImpl<T> getOSGiService(RegistryHolder holder, InjectionPoint p) {
+        if (holder.getRegistry() == null) {
+            holder.setRegistry(WeldOSGiLite.current.get());
+        }
         return new ServiceImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0],
-                p.getMember().getDeclaringClass());
+                p.getMember().getDeclaringClass(), holder.getRegistry());
     }
 
     @Produces
-    public PojoServiceRegistry getRegistry() {
-        return OSGiLite.registry();
+    public PojoServiceRegistry getRegistry(RegistryHolder holder) {
+        if (holder.getRegistry() == null) {
+            holder.setRegistry(WeldOSGiLite.current.get());
+        }
+        return holder.getRegistry();
     }
 }

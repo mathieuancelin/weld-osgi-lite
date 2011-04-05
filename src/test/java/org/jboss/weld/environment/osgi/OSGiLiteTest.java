@@ -2,7 +2,6 @@ package org.jboss.weld.environment.osgi;
 
 import de.kalpatec.pojosr.framework.launch.PojoServiceRegistry;
 import javax.enterprise.event.Event;
-import org.jboss.weld.environment.osgi.integration.Weld;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,22 +13,24 @@ import org.osgi.framework.ServiceRegistration;
  */
 public class OSGiLiteTest {
 
-    private Weld weld;
+    private WeldOSGiLite weld;
+    private WeldOSGiLite weld2;
 
     @Before
     public void setUp() {
-        weld = OSGiLite.startWeldOSGiLite();
+        weld = WeldOSGiLite.start();
+        weld2 = WeldOSGiLite.start();
     }
 
     @Test
     public void dummyTest() throws Exception {
-        Event<SayHelloEvent> eventManager = weld.getEvent().select(SayHelloEvent.class);
+        Event<SayHelloEvent> eventManager = weld.event().select(SayHelloEvent.class);
         SayHelloEvent event = new SayHelloEvent("Mathieu");
-        PojoServiceRegistry registry = weld.getInstance().select(PojoServiceRegistry.class).get();
+        PojoServiceRegistry registry = weld.instance().select(PojoServiceRegistry.class).get();
 
-        EnglishGreetingServiceImpl english = weld.getInstance().select(EnglishGreetingServiceImpl.class).get();
-        GermanGreetingServiceImpl german = weld.getInstance().select(GermanGreetingServiceImpl.class).get();
-        SpanishGreetingServiceImpl spanish = weld.getInstance().select(SpanishGreetingServiceImpl.class).get();
+        EnglishGreetingServiceImpl english = weld.instance().select(EnglishGreetingServiceImpl.class).get();
+        GermanGreetingServiceImpl german = weld.instance().select(GermanGreetingServiceImpl.class).get();
+        SpanishGreetingServiceImpl spanish = weld.instance().select(SpanishGreetingServiceImpl.class).get();
 
         Assert.assertEquals(registry.getServiceReferences(GreetingService.class.getName(), null).length, 1);
         eventManager.fire(event);
@@ -45,6 +46,7 @@ public class OSGiLiteTest {
                 spanish, null);
         Assert.assertEquals(registry.getServiceReferences(GreetingService.class.getName(), null).length, 4);
         eventManager.fire(event);
+
         germanReg.unregister();
         Assert.assertEquals(registry.getServiceReferences(GreetingService.class.getName(), null).length, 3);
         eventManager.fire(event);

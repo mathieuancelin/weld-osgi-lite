@@ -23,9 +23,11 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.util.AnnotationLiteral;
+import org.jboss.weld.environment.osgi.WeldOSGiLite;
 import org.jboss.weld.environment.osgi.api.extension.OSGiService;
 
 import org.jboss.weld.environment.osgi.extension.services.DynamicServiceHandler;
+import org.jboss.weld.environment.osgi.extension.services.RegistryHolder;
 import org.jboss.weld.environment.osgi.extension.services.ServiceImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServicesImpl;
 import org.jboss.weld.environment.osgi.extension.services.ServicesProducer;
@@ -47,9 +49,9 @@ public class CDIOSGiExtension implements Extension {
         event.addAnnotatedType(manager.createAnnotatedType(ServicesProducer.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServicesImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServiceImpl.class));
+        event.addAnnotatedType(manager.createAnnotatedType(RegistryHolder.class));
         event.addAnnotatedType(manager.createAnnotatedType(ShutdownManager.class));
         event.addQualifier(OSGiService.class);
-
     }
     
     // TODO : add injection for service registry, context, bundle, log service, entreprise stuff
@@ -135,7 +137,7 @@ public class CDIOSGiExtension implements Extension {
                 return Proxy.newProxyInstance(
                             getClass().getClassLoader(),
                             new Class[]{(Class) serviceClass},
-                            new DynamicServiceHandler(serviceName));
+                            new DynamicServiceHandler(serviceName, WeldOSGiLite.current.get()));
             } catch (Exception e) {
                 throw new CreationException(e);
             }

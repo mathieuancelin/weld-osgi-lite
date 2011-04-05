@@ -11,7 +11,7 @@ import org.jboss.weld.resources.spi.ScheduledExecutorServiceFactory;
  *
  * @author Mathieu ANCELIN - SERLI (mathieu.ancelin@serli.com)
  */
-public class OSGiEnvironment implements Environment {
+public class OSGiLiteEnvironment implements Environment {
 
     @Override
     public Set<Class<? extends Service>> getRequiredDeploymentServices() {
