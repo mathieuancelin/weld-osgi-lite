@@ -65,7 +65,12 @@ public class ServicesImpl<T> implements Services<T> {
     @Override
     public int size() {
         try {
-            return registry.getServiceReferences(serviceName, null).length;
+            ServiceReference[] refs =  registry.getServiceReferences(serviceName, null);
+            if (refs == null) {
+                return 0;
+            } else {
+                return refs.length;
+            }
         } catch (InvalidSyntaxException ex) {
             ex.printStackTrace();
             return -1;

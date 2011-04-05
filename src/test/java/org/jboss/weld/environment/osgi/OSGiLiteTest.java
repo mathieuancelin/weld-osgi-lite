@@ -39,7 +39,7 @@ public class OSGiLiteTest {
         SpanishGreetingServiceImpl spanish = weld.instance().select(SpanishGreetingServiceImpl.class).get();
         GreetingBean bean = weld.instance().select(GreetingBean.class).get();
 
-//        Assert.assertEquals(bean.getRegistrations().size(), 1);
+        Assert.assertEquals(bean.getRegistrations().size(), 1);
         Assert.assertEquals(registry.getServiceReferences(GreetingService.class.getName(), null).length, 1);
         eventManager.fire(event);
         ServiceRegistration englishReg = registry.registerService(GreetingService.class.getName(),
@@ -77,27 +77,62 @@ public class OSGiLiteTest {
         SpanishGreetingServiceImpl spanish = weld.instance().select(SpanishGreetingServiceImpl.class).get();
         GreetingBean bean = weld.instance().select(GreetingBean.class).get();
 
-        //Assert.assertEquals(bean.getRegistrations().size(), 1);
+        Assert.assertEquals(bean.getRegistrations().size(), 1);
         Assert.assertEquals(registry.getServiceReferences(GreetingService.class).size(), 1);
         eventManager.fire(event);
         Registration<GreetingService> englishReg = registry.registerService(GreetingService.class, english);
         Assert.assertEquals(registry.getServiceReferences(GreetingService.class).size(), 2);
+        Assert.assertEquals(bean.getRegistrations().size(), 2);
         eventManager.fire(event);
         Registration<GreetingService> germanReg = registry.registerService(GreetingService.class, german);
         Assert.assertEquals(registry.getServiceReferences(GreetingService.class).size(), 3);
+        Assert.assertEquals(bean.getRegistrations().size(), 3);
         eventManager.fire(event);
         Registration<GreetingService> spannishReg = registry.registerService(GreetingService.class, spanish);
         Assert.assertEquals(registry.getServiceReferences(GreetingService.class).size(), 4);
+        Assert.assertEquals(bean.getRegistrations().size(), 4);
         eventManager.fire(event);
 
         germanReg.unregister();
         Assert.assertEquals(registry.getServiceReferences(GreetingService.class).size(), 3);
+        Assert.assertEquals(bean.getRegistrations().size(), 3);
         eventManager.fire(event);
         spannishReg.unregister();
         Assert.assertEquals(registry.getServiceReferences(GreetingService.class).size(), 2);
+        Assert.assertEquals(bean.getRegistrations().size(), 2);
         eventManager.fire(event);
         englishReg.unregister();
         Assert.assertEquals(registry.getServiceReferences(GreetingService.class).size(), 1);
+        Assert.assertEquals(bean.getRegistrations().size(), 1);
         eventManager.fire(event);
+    }
+
+    @Test
+    public void registrationTest() throws Exception {
+        ServiceRegistry registry = weld.instance().select(ServiceRegistry.class).get();
+
+        EnglishGreetingServiceImpl english = weld.instance().select(EnglishGreetingServiceImpl.class).get();
+        GermanGreetingServiceImpl german = weld.instance().select(GermanGreetingServiceImpl.class).get();
+        SpanishGreetingServiceImpl spanish = weld.instance().select(SpanishGreetingServiceImpl.class).get();
+        GreetingBean bean = weld.instance().select(GreetingBean.class).get();
+
+        Assert.assertEquals(bean.getRegistrations().size(), 1);
+        Assert.assertEquals(registry.getServiceReferences(GreetingService.class).size(), 1);
+
+        registry.registerService(GreetingService.class, english);
+        Assert.assertEquals(registry.getServiceReferences(GreetingService.class).size(), 2);
+        Assert.assertEquals(bean.getRegistrations().size(), 2);
+
+        registry.registerService(GreetingService.class, german);
+        Assert.assertEquals(registry.getServiceReferences(GreetingService.class).size(), 3);
+        Assert.assertEquals(bean.getRegistrations().size(), 3);
+
+        registry.registerService(GreetingService.class, spanish);
+        Assert.assertEquals(registry.getServiceReferences(GreetingService.class).size(), 4);
+        Assert.assertEquals(bean.getRegistrations().size(), 4);
+
+        bean.unregisterAll();
+        Assert.assertEquals(registry.getServiceReferences(GreetingService.class).size(), 0);
+        Assert.assertEquals(bean.getRegistrations().size(), 0);
     }
 }

@@ -2,9 +2,11 @@ package org.jboss.weld.environment.osgi.extension.services;
 
 import de.kalpatec.pojosr.framework.launch.PojoServiceRegistry;
 import java.lang.reflect.ParameterizedType;
+import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import org.jboss.weld.environment.osgi.WeldOSGiLite;
+import org.jboss.weld.environment.osgi.api.extension.Registrations;
 
 /**
  * Producers for Specific injected types;
@@ -40,7 +42,14 @@ public class ServicesProducer {
     }
 
     @Produces
-    public <T> RegistrationsImpl<T> getRegistrations(InjectionPoint p) {
-        return new RegistrationsImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0]);
+    public <T> Registrations<T> getRegistrations(
+            @New RegistrationsImpl registration,
+            PojoServiceRegistry registry,
+            RegistrationsHolder holder,
+            InjectionPoint p) {
+        registration.setType(((Class<T>) ((ParameterizedType)p.getType()).getActualTypeArguments()[0]));
+        registration.setHolder(holder);
+        registration.setRegistry(registry);
+        return registration;
     }
 }

@@ -8,8 +8,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
+import org.jboss.weld.environment.osgi.extension.services.RegistrationsHolder;
 import org.jboss.weld.environment.osgi.integration.Weld;
-import org.omg.CORBA.Current;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -67,6 +67,7 @@ public class WeldOSGiLite {
             if (started.get()) {
                 started.set(false);
                 try {
+                    instance().select(RegistrationsHolder.class).get().clear();
                     activator.stop(registry.getBundleContext());
                 } catch (Exception ex) {
                     ex.printStackTrace();

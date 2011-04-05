@@ -26,4 +26,8 @@ public class RegistrationsHolder {
         registrations.remove(reg);
     }
 
+    public void clear() {
+        registrations.clear();
+    }
+
 }

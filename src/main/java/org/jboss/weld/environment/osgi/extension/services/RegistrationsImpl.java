@@ -6,7 +6,6 @@
 package org.jboss.weld.environment.osgi.extension.services;
 
 import de.kalpatec.pojosr.framework.launch.PojoServiceRegistry;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -21,19 +20,13 @@ import org.osgi.framework.ServiceRegistration;
  */
 public class RegistrationsImpl<T> implements Registrations<T> {
 
-    private final Class<T> t;
+    private Class<T> type;
 
     private List<Registration<T>> registrations = new ArrayList<Registration<T>>();
 
-    @Inject
     private PojoServiceRegistry registry;
 
-    @Inject
     private RegistrationsHolder holder;
-
-    public RegistrationsImpl(Type t) {
-        this.t = (Class<T>) t;
-    }
 
     @Override
     public Iterator<Registration<T>> iterator() {
@@ -52,10 +45,22 @@ public class RegistrationsImpl<T> implements Registrations<T> {
         try {
             List<ServiceRegistration> regs = holder.getRegistrations();
             for (ServiceRegistration reg : regs) {
-                registrations.add(new RegistrationImpl<T>(t, reg, registry, holder));
+                registrations.add(new RegistrationImpl<T>(type, reg, registry, holder));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void setType(Class<T> type) {
+        this.type = type;
+    }
+
+    public void setHolder(RegistrationsHolder holder) {
+        this.holder = holder;
+    }
+
+    public void setRegistry(PojoServiceRegistry registry) {
+        this.registry = registry;
     }
 }

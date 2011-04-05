@@ -55,7 +55,6 @@ public class CDIOSGiExtension implements Extension {
         event.addAnnotatedType(manager.createAnnotatedType(RegistryHolder.class));
         event.addAnnotatedType(manager.createAnnotatedType(ShutdownManager.class));
         event.addAnnotatedType(manager.createAnnotatedType(ServiceRegistryImpl.class));
-        event.addAnnotatedType(manager.createAnnotatedType(RegistrationsImpl.class));
         event.addAnnotatedType(manager.createAnnotatedType(RegistrationsHolder.class));
         event.addQualifier(OSGiService.class);
     }

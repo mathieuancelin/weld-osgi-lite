@@ -5,6 +5,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import org.jboss.weld.environment.osgi.api.extension.OSGiService;
+import org.jboss.weld.environment.osgi.api.extension.Registration;
 import org.jboss.weld.environment.osgi.api.extension.Registrations;
 import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.jboss.weld.environment.osgi.api.extension.Specification;
@@ -59,5 +60,11 @@ public class GreetingBean {
 
     public Registrations<GreetingService> getRegistrations() {
         return registrations;
+    }
+
+    public void unregisterAll() {
+        for (Registration<GreetingService> reg : registrations) {
+            reg.unregister();
+        }
     }
 }

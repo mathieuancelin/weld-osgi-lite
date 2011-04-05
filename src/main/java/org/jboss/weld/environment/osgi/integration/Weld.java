@@ -23,10 +23,12 @@ import org.jboss.weld.environment.osgi.api.extension.OSGiService;
 import org.jboss.weld.environment.osgi.api.extension.events.ContainerInitialized;
 import org.jboss.weld.environment.osgi.api.extension.events.ContainerShutdown;
 import org.jboss.weld.environment.osgi.api.extension.Publish;
+import org.jboss.weld.environment.osgi.extension.services.RegistrationsHolder;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleBeanDeploymentArchiveFactory;
 import org.jboss.weld.environment.osgi.integration.discovery.bundle.BundleDeployment;
 import org.jboss.weld.manager.api.WeldManager;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  *
@@ -120,13 +122,14 @@ public class Weld {
                     }
                     if (publishable) {
                         // register service
+                        ServiceRegistration registration = null;
                         if (service != null) {
                             Publish publish = clazz.getAnnotation(Publish.class);
                             Class[] contracts = publish.contracts();
                             if (contracts.length != 0) {
                                 for (Class contract : contracts) {
                                     System.out.println("Registering OSGi service " + clazz.getName() + " as " + contract.getName());
-                                    bundle.getBundleContext().registerService(contract.getName(), service, null);
+                                    registration = bundle.getBundleContext().registerService(contract.getName(), service, null);
                                     //bundle.getBundleContext().registerService(
                                     //        contract.getName(), getProxy(contract, annotations, bundle), null);
                                 }
@@ -140,17 +143,20 @@ public class Weld {
                                             !interf.getName().equals("org.jboss.interceptor.util.proxy.TargetInstanceProxy") &&
                                             !interf.getName().equals("javassist.util.proxy.ProxyObject")) {
                                                 System.out.println("Registering OSGi service " + clazz.getName() + " as " + interf.getName());
-                                                bundle.getBundleContext().registerService(interf.getName(), service, null);
+                                                registration = bundle.getBundleContext().registerService(interf.getName(), service, null);
 //                                                bundle.getBundleContext().registerService(
 //                                                        interf.getName(), getProxy(interf, annotations, bundle), null);
                                         }
                                     }
                                 } else {
                                     System.out.println("Registering OSGi service " + clazz.getName() +  " as " + clazz.getName());
-                                    bundle.getBundleContext().registerService(clazz.getName(), service, null);
+                                    registration = bundle.getBundleContext().registerService(clazz.getName(), service, null);
 //                                    bundle.getBundleContext().registerService(clazz.getName(), service, null);
                                 }
                             }
+                        }
+                        if (registration != null) {
+                            manager.instance().select(RegistrationsHolder.class).get().addRegistration(registration);
                         }
                     }
                 }
