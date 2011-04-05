@@ -3,7 +3,6 @@ package org.jboss.weld.environment.osgi.extension.services;
 import de.kalpatec.pojosr.framework.launch.PojoServiceRegistry;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import org.jboss.weld.environment.osgi.WeldOSGiLite;
 import org.osgi.framework.ServiceReference;
 
 /**

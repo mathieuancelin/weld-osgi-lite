@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.jboss.weld.environment.osgi.api.extension.Services;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
 /**
@@ -58,6 +59,16 @@ public class ServicesImpl<T> implements Services<T> {
             }
         } else {
             services = Collections.emptyList();
+        }
+    }
+
+    @Override
+    public int size() {
+        try {
+            return registry.getServiceReferences(serviceName, null).length;
+        } catch (InvalidSyntaxException ex) {
+            ex.printStackTrace();
+            return -1;
         }
     }
 }

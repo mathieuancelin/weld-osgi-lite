@@ -5,6 +5,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import org.jboss.weld.environment.osgi.api.extension.OSGiService;
+import org.jboss.weld.environment.osgi.api.extension.Registrations;
 import org.jboss.weld.environment.osgi.api.extension.Services;
 import org.jboss.weld.environment.osgi.api.extension.Specification;
 import org.jboss.weld.environment.osgi.api.extension.events.AbstractServiceEvent.TypedService;
@@ -23,6 +24,7 @@ public class GreetingBean {
     @Inject @OSGiService GreetingService greetingService;
     @Inject Services<GreetingService> services;
     @Inject PojoServiceRegistry registry;
+    @Inject Registrations<GreetingService> registrations;
 
     public void bindService(@Observes @Specification(GreetingService.class) ServiceArrival event) {
         TypedService<GreetingService> newService = event.type(GreetingService.class);
@@ -53,5 +55,9 @@ public class GreetingBean {
         for (GreetingService greet : services) {
             System.out.println(greet.sayHello(event.getName()));
         }
+    }
+
+    public Registrations<GreetingService> getRegistrations() {
+        return registrations;
     }
 }

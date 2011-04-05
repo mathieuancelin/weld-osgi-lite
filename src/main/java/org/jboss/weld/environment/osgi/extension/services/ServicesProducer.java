@@ -38,4 +38,9 @@ public class ServicesProducer {
         }
         return holder.getRegistry();
     }
+
+    @Produces
+    public <T> RegistrationsImpl<T> getRegistrations(InjectionPoint p) {
+        return new RegistrationsImpl<T>(((ParameterizedType)p.getType()).getActualTypeArguments()[0]);
+    }
 }
