@@ -2,6 +2,7 @@ package org.jboss.weld.environment.osgi.api.extension.events;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +92,7 @@ public abstract class AbstractServiceEvent {
                     classes.add(getClass()
                             .getClassLoader().loadClass(className));
                 } catch (ClassNotFoundException ex) {
-                    return null;
+                    return Collections.emptyList();
                 }
             }
         }
