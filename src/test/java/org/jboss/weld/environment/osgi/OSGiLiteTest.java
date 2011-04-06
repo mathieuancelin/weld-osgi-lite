@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import javax.enterprise.event.Event;
+import javax.inject.Provider;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -159,7 +160,10 @@ public class OSGiLiteTest {
     public void dynamicTest() throws Exception {
         String code = 
             "package org.jboss.weld.environment.osgi;\n" +
+            "import javax.inject.Inject;\n" +
+            "import javax.enterprise.inject.Instance;\n" +
             "public class ItalianGreetingServiceImpl implements GreetingService {\n" +
+            "    @Inject private Instance<Object> instance;" +
             "    @Override\n" +
             "    public String languageName() {\n" +
             "        return \"Italian\";\n" +
@@ -167,6 +171,10 @@ public class OSGiLiteTest {
             "    @Override\n" +
             "    public String sayHello(String name) {\n" +
             "        return \"Buongiorno \" + name +  \"!\";\n" +
+            "    }\n" +
+            "    @Override\n" +
+            "    public Object getInstance() {\n" +
+            "       return instance;\n" +
             "    }\n" +
             "}\n";
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -184,7 +192,9 @@ public class OSGiLiteTest {
         }
         Class<GreetingService> italianClazz = (Class<GreetingService>)
                 loader.loadClass("org.jboss.weld.environment.osgi.ItalianGreetingServiceImpl");
-        GreetingService italianInstance = (GreetingService) italianClazz.newInstance();
+        Provider<GreetingService> provider = weld.newTypeInstance(italianClazz);
+        GreetingService italianInstance = provider.get();
+        Assert.assertNotNull(italianInstance.getInstance());
         Event<SayHelloEvent> eventManager = weld.event().select(SayHelloEvent.class);
         SayHelloEvent event = new SayHelloEvent("Mathieu");
         ServiceRegistry registry = weld.instance().select(ServiceRegistry.class).get();
