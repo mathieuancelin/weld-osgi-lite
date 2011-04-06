@@ -188,11 +188,11 @@ public class OSGiLiteTest {
         Event<SayHelloEvent> eventManager = weld.event().select(SayHelloEvent.class);
         SayHelloEvent event = new SayHelloEvent("Mathieu");
         ServiceRegistry registry = weld.instance().select(ServiceRegistry.class).get();
-        System.out.println(registry.getServiceReferences(GreetingService.class).size());
-        Registration<GreetingService> italianReg = registry.registerService(italianClazz, italianInstance);
+        Registration<GreetingService> italianReg = registry.registerService(GreetingService.class, italianInstance);
+        Assert.assertEquals(registry.getServiceReferences(GreetingService.class).size(), 2);
         eventManager.fire(event);
-        System.out.println(registry.getServiceReferences(GreetingService.class).size());
         italianReg.unregister();
+        Assert.assertEquals(registry.getServiceReferences(GreetingService.class).size(), 1);
         eventManager.fire(event);
     }
 
