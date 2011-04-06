@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
@@ -27,15 +26,10 @@ import org.osgi.framework.BundleContext;
 public class WeldOSGiLite {
 
     public static ThreadLocal<PojoServiceRegistry> current = new ThreadLocal<PojoServiceRegistry>();
-
     private PojoServiceRegistry registry;
-
     private Weld container;
-
     private AtomicBoolean started;
-
     private Activator activator;
-
     private Map<Class<?>, Beantype<?>> types = new HashMap<Class<?>, Beantype<?>>();
 
     private WeldOSGiLite() {
@@ -43,12 +37,20 @@ public class WeldOSGiLite {
     }
 
     public static WeldOSGiLite start() {
+        try {
+            ServiceLoader<PojoServiceRegistryFactory> loader = ServiceLoader.load(PojoServiceRegistryFactory.class);
+            PojoServiceRegistry registry = loader.iterator().next().newPojoServiceRegistry(new HashMap());
+            return start(registry);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static WeldOSGiLite start(PojoServiceRegistry registry) {
         final WeldOSGiLite weldLite = new WeldOSGiLite();
         weldLite.activator = new Activator();
         try {
-            ServiceLoader<PojoServiceRegistryFactory> loader
-                    = ServiceLoader.load(PojoServiceRegistryFactory.class);
-            weldLite.registry = loader.iterator().next().newPojoServiceRegistry(new HashMap());
+            weldLite.registry = registry;
             current.set(weldLite.registry);
             final BundleContext context = weldLite.registry.getBundleContext();
             Runtime.getRuntime().addShutdownHook(new Thread() {
