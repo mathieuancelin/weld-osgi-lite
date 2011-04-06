@@ -16,4 +16,9 @@ public class GermanGreetingServiceImpl implements GreetingService {
         return "Hallo " + name +  "!";
     }
 
+    @Override
+    public Object getInstance() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

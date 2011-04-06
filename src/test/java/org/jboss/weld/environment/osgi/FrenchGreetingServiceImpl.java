@@ -21,4 +21,9 @@ public class FrenchGreetingServiceImpl implements GreetingService {
         return "Bonjour " + name +  "!";
     }
 
+    @Override
+    public Object getInstance() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

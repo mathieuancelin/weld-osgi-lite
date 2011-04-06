@@ -16,4 +16,9 @@ public class SpanishGreetingServiceImpl implements GreetingService {
         return "Hola " + name +  "!";
     }
 
+    @Override
+    public Object getInstance() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

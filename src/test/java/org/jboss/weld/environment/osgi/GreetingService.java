@@ -8,4 +8,5 @@ public interface GreetingService {
 
     String languageName();
     String sayHello(String name);
+    Object getInstance();
 }
